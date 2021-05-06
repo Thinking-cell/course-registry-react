@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--* I, Ranvir Singh, 000819787 certify that this material is my original work.
+     * No other person's work has been used without due acknowledgement-->
+  <title>GradeJs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 6</title>
+
+  
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rellax/1.12.1/rellax.js" integrity="sha512-qk0XupXlge1h9I63+bC7K8850xgWnUjTgSNkfLnsqc7dWdx4031UbKjKs2cuRxsNXymkSjyzSCiryVouU74zkg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <style>
+
+     /*body{background-color: #ffccff;} */
+    .container {
+      padding: 20px;
+      background-color:lightgoldenrodyellow;
+    }
+    .container h1
+    {
+        border: solid 3px black;
+        border-radius: 20px;
+        
+    }
+
+    .box{
+        border: solid 3px black;
+        border-radius: 20px;
+    }
+
+    .form h2{
+        text-decoration: underline;
+    }
+    .box table{text-align: center;}
+    .utility{
+        font-size: small;
+        
+    }
+    
+    
+  </style>
+</head>
+
+<body>
+
+
+    <div id="root"></div>
+
+    
+
+    <script type="text/babel">
+
+        
+
+        class GradeHeader extends React.Component{
+            render() {
+            return (
+            
+                    <h1 className='p-3' style={{textAlign:"center"}} >{this.props.headingValue}</h1>
+                    
+                 )
+            }
+            static defaultProps =
+            {
+                headingValue : "Test Header" 
+            }
+        }
+
+
+
+        class GradeForm extends React.Component{
+            
+
+            constructor(props){
+                
+                super(props)
+                this.checkFieldString = this.checkFieldString.bind(this);
+                this.checkFieldInt = this.checkFieldInt.bind(this);
+                this.state={
+                    error:"",
+                    func:()=>{},
+                    cName:this.props.cName,
+                    cGrade:this.props.cGrade,
+                    prevName:this.props.cName
+                }
+               
+
+                
+            }
+
+             // to update state from props before render
+            static getDerivedStateFromProps(props, state) {
+                if(state.prevName!==props.cName){
+                    return { ...state, cName:props.cName,cGrade:props.cGrade,func:props.func ,prevName:props.cName, error:"",  time: Date.now() }
+                }else{
+                    return null
+                }
+            }
+            
+            
+            // to check fields of string
+            checkFieldString(event){
+                let value=event.target.value;
+                let errorCode="";
+                this.setState({cName:value});
+                if(value==""||value==null){
+                    errorCode="ERROR_NULL"
+                }else if(value.length<5||value.length>20){
+                    errorCode="ERROR_STR_OUT_OF_RANGE"
+                }
+                
+                
+                
+                this.displayError(errorCode)
+            }
+            // to check fields fo integers
+            checkFieldInt(event){
+                let value=event.target.value;
+                let errorCode="";
+                this.setState({cGrade:value});
+                if(value==null||value==""){
+                    errorCode="ERROR_NULL"
+                }else if(value<0||value>100){
+                    errorCode="ERROR_INT_OUT_OF_RANGE"
+                }
+                this.displayError(errorCode)
+            }
+
+            
+
+            displayError(errorCode)
+            {
+                
+                
+                if(errorCode==""){
+                    this.setState({error:""});
+                    this.setState({func:this.props.func});
+                }
+                else if(errorCode=="ERROR_NULL"){
+                    this.setState({error:"Fields cannot be empty"});
+                    this.setState({func:()=>{}});
+                }else if(errorCode=="ERROR_INT_OUT_OF_RANGE"){
+                    this.setState({error:"Grade must be between 0 and 100"});
+                    this.setState({func:()=>{}});
+                }else if(errorCode=="ERROR_STR_OUT_OF_RANGE"){
+                    this.setState({error:"Course Name length must be between 5 and 20 characters"});
+                    this.setState({func:()=>{}});
+                }
+            }
+
+            render() {
+
+
+
+            return (
+                
+                <div className="form box container" >
+                    <h2>{this.props.funcName} Course </h2>
+                    
+                    <div className=" form-inline"  >
+                        
+                        
+                        <label>Name:</label>
+                        <input type="type" className="form-control m-2" id="email" placeholder="Enter Course Name" onChange={this.checkFieldString} value={this.state.cName}  name="courseName" ></input>
+                        <label >Grade:</label>
+                        <input type="number" className="form-control m-2" id="pwd" placeholder="Enter Grade" onChange={this.checkFieldInt} value={this.state.cGrade}  name="grade"></input>
+                        
+                        <button onClick={this.state.func.bind(this,this.state.cName,this.state.cGrade)}  className="btn btn-primary ">{this.props.funcName}</button>
+                    </div>
+                    <ErrorBox error={this.state.error}/>
+                </div>
+                    
+                    
+                )
+            }
+            static defaultProps =
+            {
+                funcName:"Add",
+                func:() =>{},
+                cName:"Testing Text",
+                cGrade:0
+            }
+        
+        }
+
+
+
+
+        class ErrorBox extends React.Component{
+            render(){
+                return(
+                    <div style={{color:'red',width:'100%',textAlign:'center'}}>
+                        <p>{this.props.error}</p>
+                    </div>
+                )
+            }
+
+        }
+
+
+
+
+
+
+        class GradeTable extends React.Component{
+            constructor(props){
+                
+                super(props)
+
+
+                
+            }
+
+            render() {
+
+                
+            return (
+                <div className="container  box my-4 ">
+                    <h2 style={{textAlign:'center'}}>Courses</h2>
+                                
+                    <table className="table table-dark table-hover rounded-bottom ">
+                        <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Grade</th>
+                            <th>Utilities</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {this.props.tableData.map((rowData)=> <TableRow funcDelete={this.props.funcDelete} funcEdit={this.props.funcEdit}  key={rowData.id} rowId={rowData.id}  name={rowData.name} grade={rowData.grade}/>)}
+                        
+                        
+                        </tbody>
+                    </table>
+                    <ErrorBox  error={this.props.error}/>
+                </div>
+        
+        
+            )
+            }
+            static defaultProps =
+            {
+                funcDelete:()=>{console.log("Delete default")},
+                funcEdit:()=>{console.log("Edit default")},
+                tableData:[
+                    {
+                        id:0,
+                        name:"Front End Programming",
+                        grade:56
+                    }
+                ]
+            }
+        }
+
+
+
+
+
+
+        class TableRow extends React.Component{
+            constructor(props){
+                
+                super(props)
+
+
+                
+            }
+
+            render() {
+            return (
+                <tr>
+                    <td>{this.props.name}</td>
+                    <td>{this.props.grade}</td>
+                    <td>
+                        <button  style={{marginRight:'8px'}} onClick={this.props.funcEdit.bind(this,this.props.rowId)} className="utility btn btn-light ">Edit</button>
+                        <button  onClick={this.props.funcDelete.bind(this,this.props.rowId)}  className=" utility btn btn-light">Delete</button>
+                    </td>
+                </tr>
+        
+        
+            )
+            }
+        }
+
+
+
+
+
+        class GradeAnalyticalTable extends React.Component{
+            render() {
+
+                
+            return (
+                <div className="container  box my-4 ">
+                    <h2 className='w-100' onClick={this.props.func} style={{textAlign:'center'}}>Analytical Table </h2>
+                    
+                                
+                    <table className="table table-bordered r rounded-bottom ">
+                        <thead>
+                        <tr className='table-primary'>
+                            <th>Minimum</th>
+                            <th>Maximum</th>
+                            <th>Average</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr className='table-info'>
+                            <td>{this.props.min}</td>
+                            <td>{this.props.max}</td>
+                            <td>{this.props.avg}</td>
+                            </tr>
+                        
+                        
+                        </tbody>
+                        
+                    </table>
+                    
+                </div>
+
+
+            )
+            }
+
+            static defaultProps =
+            {
+                min:0,
+                max:0,
+                avg:0
+            }
+
+        }
+        
+
+        //<input type='text' onChange={this.change}></input>
+        // change(event)
+        //     {
+        //         console.log(event.target.value)
+        //     }
+            
+
+        class GradeJs extends React.Component{
+            constructor(props){
+                
+                super(props)
+                this.add = this.add.bind(this);
+                this.edit = this.edit.bind(this);
+                this.editRow = this.editRow.bind(this);
+                this.deleteRow = this.deleteRow.bind(this);
+                this.updateAnalyticalTable = this.updateAnalyticalTable.bind(this);
+                this.state={
+
+                    tableData:[],
+                    idGen:1,
+                    count:0,
+                    error:"",
+                    rowTobeEdited:-1,
+                    currentFunc:this.add,
+                    currentFuncName:"Add",
+                    currentInputName:"",
+                    currentInputGrade:0,
+                    minGrade:0,
+                    maxGrade:0,
+                    avgGrade:0,
+
+                }
+
+
+                
+
+                
+                //console.log(this.state.currentFunc);
+                
+            }
+            
+
+            add(cName,cGrade){
+                console.log("add init");
+                console.log(cName);
+                console.log(cGrade)
+                
+                let rowTemp={
+                    id:this.state.idGen,
+                    name:cName,
+                    grade:parseInt(cGrade)
+                };
+                let doAdd=true;
+                for (const [index, value] of this.state.tableData.entries()) {
+                    if(value.name.replace(/\s+/g, '').toLowerCase()==cName.replace(/\s+/g, '').toLowerCase()){
+                        doAdd=false;
+                        this.setState((prevState) => ({
+                            error:"Entry Already Exists!"
+                        }));
+                    }
+                }
+                
+                
+                if(doAdd){
+                    this.setState((prevState) => ({
+                        tableData: [...prevState.tableData, rowTemp],
+                        idGen:prevState.idGen+1,
+                        count:prevState.count+1,
+                        error:""
+                    }));
+                    let currentData=[...this.state.tableData, rowTemp];
+                    this.updateAnalyticalTable(currentData,(this.state.count+1))
+                }
+                
+                
+
+
+                
+                
+            }
+
+            edit(name,grade){
+                console.log("Edit");
+                console.log(name);
+                console.log(grade);
+               
+                let data = this.state.tableData;
+               
+                let rowId=this.state.rowTobeEdited;
+                data.map((row)=>{
+                    if(row.id===rowId){
+                        row.name=name;
+                        row.grade=grade;
+                    }
+                });
+                console.log(data);
+                this.updateAnalyticalTable(data,this.state.count)
+                this.setState({tableData:data})
+
+               this.changeToAdd();
+
+
+                // debug
+                // console.log(this.state.rowTobeEdited);
+                // console.log(this.state.currentFunc);
+                // console.log(this.state.currentFuncName);
+                // console.log(this.state.currentInputName);
+                // console.log(this.state.currentInputGrade);
+                
+
+            }
+
+
+
+            editRow(rowId){
+                console.log("Edit Test");
+                console.log(rowId);
+                let rowName="";
+                let rowGrade="";
+                for (const [index, value] of this.state.tableData.entries()) {
+                    if(value.id===rowId){
+                        rowName=value.name;
+                        rowGrade=value.grade;
+                    }
+                }
+                console.log(rowGrade);
+                console.log(rowName);
+                // was testing something #learningcurve
+                this.setState( {currentInputName:rowName});
+                this.setState( {currentInputGrade:rowGrade});
+                this.setState( {rowTobeEdited:rowId});
+                this.changeToEdit();
+                
+                    
+
+            }
+            changeToEdit(){
+                
+                this.setState( {currentFuncName:"Edit"});
+                this.setState( {currentFunc:this.edit});
+
+            }
+            changeToAdd(){
+                this.setState( {
+                    currentInputName:"",
+                    currentInputGrade:0,
+                    rowTobeEdited:-1,
+                    currentFuncName:"Add",
+                    currentFunc:this.add
+                });
+            }
+            deleteRow(rowId){
+                console.log("Delete ");
+                console.log(rowId);
+                
+                let temp=[...this.state.tableData];
+                console.log(temp);
+                temp=temp.filter(rowData => rowData.id!==rowId);
+                this.setState((prevState) => ({
+                        tableData: temp,
+                        count:prevState.count-1,
+                        error:"",
+                        
+
+                }));
+                // sending  current data but with prev state count
+                this.updateAnalyticalTable(temp,(this.state.count-1));
+                console.log(this.changeToAdd);
+                this.changeToAdd();
+               // console.log(temp);
+
+            }
+
+
+            updateMin(data,count){
+
+                if(count!==0){
+                    let min=Number.MAX_SAFE_INTEGER;
+                    data.map((row)=>{
+                        if(parseInt(row.grade)<parseInt(min)){
+                            min=row.grade;
+                        }
+                    });
+                    this.setState( {minGrade:min});
+                }else{
+                    this.setState( {minGrade:0});
+                }
+                
+
+            }
+            updateMax(data){
+                //let data=this.state.tableData;
+                let max=0;
+                data.map((row)=>{
+                    if(row.grade>max){
+                        max=row.grade;
+                    }
+                });
+                this.setState( {maxGrade:max});
+            }
+
+            updateAvg(data,count){
+                if(count!==0){
+                    let sum=0;
+                    //let data=this.state.tableData;
+                    data.map((row)=>{
+                        sum=parseInt(sum)+parseInt(row.grade)
+                    });
+                    
+                    console.log(sum);
+                    console.log(count);
+                    let avg=parseFloat(sum)/parseFloat(count);
+                    avg=avg.toFixed(2);
+                    this.setState( {avgGrade:avg});
+                }else{
+                    this.setState( {avgGrade:0});
+                }
+                
+
+
+            }
+
+
+            updateAnalyticalTable(data,count){
+                this.updateAvg(data,count);
+                this.updateMin(data,count);
+                this.updateMax(data);
+            }
+
+           
+            render() {
+            return (
+                <div className='GradeJs container'>
+                     
+                    <GradeHeader headingValue='Grade My Course!'/>
+                  
+                    <GradeForm func={this.state.currentFunc} funcName={this.state.currentFuncName} cName={this.state.currentInputName} cGrade={this.state.currentInputGrade}/>
+                    
+                    <GradeTable funcDelete={this.deleteRow} funcEdit={this.editRow} tableData={this.state.tableData} error={this.state.error}/>
+
+                    <GradeAnalyticalTable min={this.state.minGrade} max={this.state.maxGrade} avg={this.state.avgGrade} />
+                    
+                    
+                   
+                </div>  
+                
+                )
+            }
+
+
+           
+
+        }
+
+        // redering the first page
+         ReactDOM.render(
+            <GradeJs />
+        ,document.getElementById('root')
+        );
+
+
+
+
+    </script>
+
+</body>
+
+</html>
